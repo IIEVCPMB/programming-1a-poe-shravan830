@@ -1,6 +1,5 @@
 package com.mycompany.progassignment1;
 
-
 import java.util.regex.Pattern;
 
 public class Login {
@@ -58,5 +57,15 @@ public class Login {
         } else {
             return "Username or password incorrect, please try again.";
         }
+    }
+
+    // ✅ Fixed version of the getter method
+    public String getFirstName() {
+        return firstName;
+    }
+
+    // Optional (useful for future improvements)
+    public String getLastName() {
+        return lastName;
     }
 }

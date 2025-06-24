@@ -90,7 +90,7 @@ public class ProgAssignment1 {
             if (input == null) break;
 
             switch (input) {
-                case "1" -> sendMessagesFlow();
+                case "1" -> sendMessagesFlow(loginSystem.getFirstName());
                 case "2" -> {
                     String sentMsgs = Message.printMessages();
                     if (sentMsgs.isEmpty()) {
@@ -108,7 +108,7 @@ public class ProgAssignment1 {
         }
     }
 
-    private static void sendMessagesFlow() {
+    private static void sendMessagesFlow(String sender) {
         String numInput = JOptionPane.showInputDialog("How many messages do you want to send?");
         if (numInput == null) return;
 
@@ -168,7 +168,7 @@ public class ProgAssignment1 {
                 }
 
                 if (option >= 1 && option <= 3) {
-                    String result = message.sendMessageOption(option);
+                    String result = message.sendMessageOption(option, sender);
                     JOptionPane.showMessageDialog(null, result);
                     break; // Exit option input loop and continue with next message
                 } else {

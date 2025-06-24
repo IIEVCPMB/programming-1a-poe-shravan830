@@ -41,48 +41,102 @@ public class Main {
 
         if (!success) return;
 
-        // Optional: Send one message
-        int sendNow = JOptionPane.showConfirmDialog(null, "Do you want to send a message now?", "Send Message", JOptionPane.YES_NO_OPTION);
-        if (sendNow == JOptionPane.YES_OPTION) {
-            String recipient = JOptionPane.showInputDialog("Enter recipient phone number (with +countrycode):");
-            if (recipient == null) return;
+        // Menu after login
+        while (true) {
+            String choice = JOptionPane.showInputDialog("""
+                    Choose an option:
+                    1) Send a message
+                    2) View all sent messages
+                    3) View sender and recipient list
+                    4) View longest message
+                    5) Search message by ID
+                    6) Search messages by recipient
+                    7) Delete stored message by hash
+                    8) View sent message report
+                    9) Quit
+                    """);
 
-            String messageText = JOptionPane.showInputDialog("Enter your message (max 250 characters):");
-            if (messageText == null) return;
+            if (choice == null) return;
 
-            Message message = new Message(1, recipient, messageText);
+            switch (choice) {
+                case "1" -> {
+                    String recipient = JOptionPane.showInputDialog("Enter recipient phone number (with +countrycode):");
+                    if (recipient == null) continue;
 
-            if (!message.checkRecipientCell()) {
-                JOptionPane.showMessageDialog(null, "Invalid phone number format.");
-                return;
-            }
+                    String messageText = JOptionPane.showInputDialog("Enter your message (max 250 characters):");
+                    if (messageText == null) continue;
 
-            String validation = message.validateMessageText();
-            if (!validation.equals("Message ready to send.")) {
-                JOptionPane.showMessageDialog(null, validation);
-                return;
-            }
+                    Message message = new Message(1, recipient, messageText);
 
-            JOptionPane.showMessageDialog(null, message.getMessageDetails());
+                    if (!message.checkRecipientCell()) {
+                        JOptionPane.showMessageDialog(null, "Invalid phone number format.");
+                        continue;
+                    }
 
-            String optionInput = JOptionPane.showInputDialog("""
-                Choose an option:
-                1) Send Message
-                2) Disregard Message
-                3) Store Message to send later
-                """);
+                    String validation = message.validateMessageText();
+                    if (!validation.equals("Message ready to send.")) {
+                        JOptionPane.showMessageDialog(null, validation);
+                        continue;
+                    }
 
-            if (optionInput != null) {
-                try {
-                    int option = Integer.parseInt(optionInput);
-                    String result = message.sendMessageOption(option);
-                    JOptionPane.showMessageDialog(null, result);
-                } catch (NumberFormatException e) {
-                    JOptionPane.showMessageDialog(null, "Invalid input.");
+                    JOptionPane.showMessageDialog(null, message.getMessageDetails());
+
+                    String optionInput = JOptionPane.showInputDialog("""
+                            Choose an option:
+                            1) Send Message
+                            2) Disregard Message
+                            3) Store Message to send later
+                            """);
+
+                    if (optionInput != null) {
+                        try {
+                            int option = Integer.parseInt(optionInput);
+                            String result = message.sendMessageOption(option, firstName); // sender = firstName
+                            JOptionPane.showMessageDialog(null, result);
+                        } catch (NumberFormatException e) {
+                            JOptionPane.showMessageDialog(null, "Invalid input.");
+                        }
+                    }
+
+                    JOptionPane.showMessageDialog(null, "Total messages sent: " + Message.returnTotalMessages());
                 }
-            }
 
-            JOptionPane.showMessageDialog(null, "Total messages sent: " + Message.returnTotalMessages());
+                case "2" -> JOptionPane.showMessageDialog(null, Message.printMessages());
+
+                case "3" -> JOptionPane.showMessageDialog(null, Message.displaySendersAndRecipients());
+
+                case "4" -> JOptionPane.showMessageDialog(null, Message.displayLongestSentMessage());
+
+                case "5" -> {
+                    String id = JOptionPane.showInputDialog("Enter message ID to search:");
+                    if (id != null) {
+                        JOptionPane.showMessageDialog(null, Message.searchByMessageID(id));
+                    }
+                }
+
+                case "6" -> {
+                    String rec = JOptionPane.showInputDialog("Enter recipient number to search:");
+                    if (rec != null) {
+                        JOptionPane.showMessageDialog(null, Message.searchByRecipient(rec));
+                    }
+                }
+
+                case "7" -> {
+                    String hash = JOptionPane.showInputDialog("Enter hash to delete:");
+                    if (hash != null) {
+                        JOptionPane.showMessageDialog(null, Message.deleteMessageByHash(hash));
+                    }
+                }
+
+                case "8" -> JOptionPane.showMessageDialog(null, Message.displayMessageReport());
+
+                case "9" -> {
+                    JOptionPane.showMessageDialog(null, "Goodbye!");
+                    System.exit(0);
+                }
+
+                default -> JOptionPane.showMessageDialog(null, "Invalid option.");
+            }
         }
     }
 }

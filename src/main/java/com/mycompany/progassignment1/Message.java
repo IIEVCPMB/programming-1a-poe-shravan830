@@ -1,17 +1,42 @@
 package com.mycompany.progassignment1;
 
 import javax.swing.*;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 public class Message {
     private static int totalMessages = 0;
+
     private static final ArrayList<String> sentMessages = new ArrayList<>();
-    private static final JSONArray storedMessages = new JSONArray();
+    private static final ArrayList<String> disregardedMessages = new ArrayList<>();
+    private static final ArrayList<String> storedMessages = new ArrayList<>();
+    private static final ArrayList<String> messageHashes = new ArrayList<>();
+    private static final ArrayList<String> messageIDs = new ArrayList<>();
+    private static final ArrayList<String> recipients = new ArrayList<>();
+    private static final ArrayList<String> senders = new ArrayList<>();
+
+    static Object searchByMessageID(String id) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    static Object searchByRecipient(String rec) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    static Object deleteMessageByHash(String hash) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    static Object displayMessageReport() {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 
     private String messageID;
     private int messageNum;
@@ -51,24 +76,36 @@ public class Message {
     public String createMessageHash() {
         String[] words = messageText.split(" ");
         String firstWord = words.length > 0 ? words[0] : "";
-        String lastWord = words.length > 1 ? words[words.length - 1] : "";
+        String lastWord = words.length > 1 ? words[words.length - 1] : firstWord;
         return (messageID.substring(0, 2) + ":" + messageNum + ":" + firstWord + lastWord).toUpperCase();
     }
 
-    public String sendMessageOption(int option) {
+    public String sendMessageOption(int option, String sender) {
         switch (option) {
             case 1:
                 sentMessages.add(messageText);
+                addToArrays("sent", sender);
                 totalMessages++;
                 return "Message successfully sent.";
             case 2:
+                disregardedMessages.add(messageText);
+                addToArrays("disregarded", sender);
                 return "Press 0 to delete message.";
             case 3:
                 storeMessage();
+                storedMessages.add(messageText);
+                addToArrays("stored", sender);
                 return "Message successfully stored.";
             default:
                 return "Invalid choice.";
         }
+    }
+
+    private void addToArrays(String flag, String sender) {
+        messageHashes.add(messageHash);
+        messageIDs.add(messageID);
+        recipients.add(recipient);
+        senders.add(sender);
     }
 
     public void storeMessage() {
@@ -78,11 +115,23 @@ public class Message {
         msgObj.put("text", messageText);
         msgObj.put("hash", messageHash);
 
-        storedMessages.add(msgObj);
+        try {
+            JSONParser parser = new JSONParser();
+            JSONArray existingMessages = new JSONArray();
 
-        try (FileWriter file = new FileWriter("storedMessages.json")) {
-            file.write(storedMessages.toJSONString());
-            file.flush();
+            try (FileReader reader = new FileReader("storedMessages.json")) {
+                Object obj = parser.parse(reader);
+                existingMessages = (JSONArray) obj;
+            } catch (Exception ignored) {
+                // File might not exist yet
+            }
+
+            existingMessages.add(msgObj);
+
+            try (FileWriter file = new FileWriter("storedMessages.json")) {
+                file.write(existingMessages.toJSONString());
+                file.flush();
+            }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(null, "Error storing message: " + e.getMessage());
         }
@@ -106,4 +155,37 @@ public class Message {
                "\nRecipient: " + recipient +
                "\nMessage: " + messageText;
     }
-}
+
+    // ----------------------
+    // PART 3 FUNCTIONALITY
+    // ----------------------
+
+    public static String displaySendersAndRecipients() {
+        StringBuilder result = new StringBuilder("Sender and Recipient List:\n\n");
+        for (int i = 0; i < sentMessages.size(); i++) {
+            String sender = (i < senders.size()) ? senders.get(i) : "Unknown";
+            String recipient = (i < recipients.size()) ? recipients.get(i) : "Unknown";
+            result.append("Sender: ").append(sender)
+                  .append(" | Recipient: ").append(recipient)
+                  .append("\nMessage: ").append(sentMessages.get(i)).append("\n\n");
+        }
+        return result.toString();
+    }
+
+    public static String displayLongestSentMessage() {
+        String longest = "";
+        for (String msg : sentMessages) {
+            if (msg.length() > longest.length()) {
+                longest = msg;
+            }
+        }
+        return longest.isEmpty() ? "No sent messages yet." : "Longest message: " + longest;
+    }
+
+    public static String searchByMes ;
+
+    String sendMessageOption(int option) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+           
+            }
